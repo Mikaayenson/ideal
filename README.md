@@ -11,7 +11,7 @@
 
 <!-- Badges -->
 
-[![GoDoc](https://godoc.org/github.com/Mikaayenson/ideal?status.svg)](https://godoc.org/github.com/Mikaayenson/ideal)
+[![Go Reference](https://pkg.go.dev/badge/github.com/Mikaayenson/ideal.svg)](https://pkg.go.dev/github.com/Mikaayenson/ideal)
 
 <h5>
     <a href="https://github.com/Mikaayenson/ideal/issues/">Report Bug</a>
@@ -170,4 +170,5 @@ Mika Ayenson - [@mikaayenson](https://github.com/Mikaayenson)
 
 1. [Selecting a Package Name](https://go.dev/blog/package-names)
 2. Leverage an [Awesome Readme Template](https://github.com/Louis3797/awesome-readme-template/blob/main/README.md)
-3. TODO Add More References
+3. Start organizing [Package Layout](https://github.com/golang-standards/project-layout)
+4. TODO Add More References
