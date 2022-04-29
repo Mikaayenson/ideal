@@ -11,7 +11,7 @@
 
 <!-- Badges -->
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/Mikaayenson/ideal.svg)](https://pkg.go.dev/github.com/Mikaayenson/ideal)
+[![Go Reference](https://pkg.go.dev/badge/github.com/Mikaayenson/ideal.svg)](https://pkg.go.dev/github.com/Mikaayenson/ideal) [![Go Report Card](https://goreportcard.com/badge/github.com/Mikaayenson/ideal?style=flat-square)](https://goreportcard.com/report/github.com/Mikaayenson/ideal)
 
 <h5>
     <a href="https://github.com/Mikaayenson/ideal/issues/">Report Bug</a>
