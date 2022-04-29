@@ -171,4 +171,6 @@ Mika Ayenson - [@mikaayenson](https://github.com/Mikaayenson)
 1. [Selecting a Package Name](https://go.dev/blog/package-names)
 2. Leverage an [Awesome Readme Template](https://github.com/Louis3797/awesome-readme-template/blob/main/README.md)
 3. Start organizing [Package Layout](https://github.com/golang-standards/project-layout)
-4. TODO Add More References
+4. Add [Config Mangement](https://github.com/spf13/viper)
+5. Add [Log Management](https://github.com/sirupsen/logrus)
+6. TODO Add More References
