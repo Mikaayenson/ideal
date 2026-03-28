@@ -1,0 +1,4 @@
+# Pin the Go toolchain for local dev (https://mise.jdx.dev/).
+# Run: mise install
+[tools]
+go = "1.24.7"

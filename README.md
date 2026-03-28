@@ -1,176 +1,141 @@
-#
+# Ideal
 
-<div align="center">
+Opinionated **Go application starter**: a working CLI you can delete or extend, with layout and tooling that scale from prototype to production.
 
-  <img src="assets/logo.png" alt="logo" width="400" height="auto" />
-  <h1>Ideal</h1>
+**What you get**
 
-  <p>
-    The ideal golang project template for newbies.
-  </p>
+- **Layout**: [`cmd/`](https://github.com/golang-standards/project-layout) for binaries, [`internal/`](https://go.dev/doc/go1.4#internalpackages) for app code (not importable by other modules).
+- **Config**: [12-factor](https://12factor.net) settings via environment (`IDEAL_*`), parsed with [`caarlos0/env`](https://github.com/caarlos0/env).
+- **Logging**: [`log/slog`](https://pkg.go.dev/log/slog) with text or JSON (level names match [slog levels](https://pkg.go.dev/log/slog#Level)).
+- **Quality**: `go vet`, tests with race + shuffle, [`golangci-lint` v2](https://golangci-lint.run/), and [`govulncheck`](https://go.dev/doc/security/vuln/) in CI.
+- **Maintenance**: [Dependabot](.github/dependabot.yml) for Go modules and GitHub Actions.
 
-<!-- Badges -->
+## Layout
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/Mikaayenson/ideal.svg)](https://pkg.go.dev/github.com/Mikaayenson/ideal) [![Go Report Card](https://goreportcard.com/badge/github.com/Mikaayenson/ideal?style=flat-square)](https://goreportcard.com/report/github.com/Mikaayenson/ideal)
+| Path | Role |
+|------|------|
+| `cmd/ideal/` | Thin `main`: flags, config, wiring, signal-aware context |
+| `internal/config/` | Typed env config |
+| `internal/logging/` | slog setup (text or JSON) |
+| `internal/greetings/` | Example domain package + tests |
+| `internal/version/` | Build metadata (`-version`, logs); falls back to [debug.ReadBuildInfo](https://pkg.go.dev/runtime/debug#ReadBuildInfo) |
 
-<h5>
-    <a href="https://github.com/Mikaayenson/ideal/issues/">Report Bug</a>
-  <span> · </span>
-    <a href="https://github.com/Mikaayenson/ideal/pulls/">Request Feature</a>
-  </h5>
-</div>
+**Toolchain:** optional [mise](https://mise.jdx.dev/) config in [`mise.toml`](mise.toml) pins a Go release for contributors (`mise install`).
 
-<br />
+## Requirements
 
-<!-- About the Project -->
-## :star2: About the Project
+- [Go](https://go.dev/dl/) **1.24+** (see `go.mod`)
 
-Sometimes people just want to create a new project in go but aren't sure the how to get started. This project is designed to be the ideal template inspired by [12-factors](https://12factor.net) for go projects with a bit of flair. It's also a fun way to learn go conventions.
-
-<!-- Screenshots -->
-### :camera: Screenshots
-
-<p align="center">
-  TODO Add Image
-</p>
-
-<!-- TechStack -->
-### :space_invader: Tech Stack
-
-<details>
-  <summary>ideal</summary>
-  <ul>
-    <li><a href="https://go.dev">golang</a></li>
-
-  </ul>
-</details>
-
-<details>
-<summary>DevOps</summary>
-  <ul>
-    <li><a href="https://www.docker.com/">Docker</a></li>
-    <li><a href="https://github.com/features/actions">GitHub Actions</a></li>
-  </ul>
-</details>
-
-<!-- Features -->
-### :dart: Features
-
-- TODO Add Features
-<!-- Config Variables -->
-### :key: Config Variables
-
-- `TODO` : Add Config Variables
-
-<!-- Getting Started -->
-## :toolbox: Getting Started
-
-<!-- Prerequisites -->
-### :bangbang: Prerequisites
-
-This project uses poetry as the python package manager
-
-- `TODO` Add Install Guide
-
-<!-- Run Locally -->
-### :running: Run Locally
-
-TODO: Add GIF
-
-Clone the project
+## Quick start
 
 ```bash
-  git clone git@github.com:Mikaayenson/ideal.git
+git clone <your-repo-url> ideal
+cd ideal
+go run ./cmd/ideal
 ```
 
-Go to the project directory
+Override config with environment variables (see [`.env.example`](.env.example)):
 
 ```bash
-  cd ideal
+export IDEAL_USERNAME=Ada
+export IDEAL_LOG_LEVEL=debug
+go run ./cmd/ideal
 ```
 
-Install dependencies
+## First-time fork checklist
+
+1. Set the **module path** in `go.mod` and fix `import` paths (see below).
+2. Update **`LICENSE`** copyright for your project.
+3. Rename the **`ideal`** binary: `cmd/ideal` → `cmd/<yourapp>`, update `Makefile` `BINARY`, Dockerfile paths, and CI if needed.
+
+## Replace the module path
+
+1. Edit the first line of `go.mod` (`module …`).
+2. Replace imports of `github.com/stryker/ideal` across the tree.
+
+**macOS (BSD sed)**
 
 ```bash
-  TODO Add dependencies
+rg -l 'github.com/stryker/ideal' --glob '*.go' | xargs sed -i '' 's|github.com/stryker/ideal|github.com/you/repo|g'
 ```
 
-
-Run ideal
+**Linux (GNU sed)**
 
 ```bash
-  ideal --help
+rg -l 'github.com/stryker/ideal' --glob '*.go' | xargs sed -i 's|github.com/stryker/ideal|github.com/you/repo|g'
 ```
 
-<!-- Running Tests -->
-### :test_tube: Running Tests
+## Commands
 
-Run tests
+Run `make help` for a short summary of every target.
+
+| Command | Description |
+|---------|-------------|
+| `go test ./...` | Run tests |
+| `make vet` | `go vet ./...` |
+| `make test` | Tests with race detector and shuffle |
+| `make cover` | Coverage report → `coverage.html` |
+| `make build` | Build `bin/ideal` with version from `git describe` |
+| `make vuln` | Run `govulncheck` (pinned version, same as CI) |
+| `make lint` | golangci-lint v2 (install separately; see below) |
+| `make fmt` | `golangci-lint fmt` |
+| `make check` | `vet` + `test` + `lint` + `build` |
+| `make docker-build` | Image with `VERSION` build-arg from git |
+| `make install-lint` | Optional: install pinned golangci-lint into `GOPATH/bin` |
+
+### Installing golangci-lint locally
+
+- **Homebrew**: `brew install golangci-lint` (ensure v2; `golangci-lint version`).
+- **Make**: `make install-lint` installs the same **v2.11.4** pin used in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
+### Live reload (optional)
 
 ```bash
-  go test
+go install github.com/air-verse/air@latest
+air
 ```
 
-<!-- Build: Poetry -->
-### :triangular_flag_on_post: Build: Go Package
+## Continuous integration
 
-Build this project
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on pushes and PRs to `main`:
+
+- `go vet`, release-mode `go build`, and `go test -race -shuffle`
+- `govulncheck` on `./...`
+- golangci-lint **v2.11.4**
+
+## Docker
 
 ```bash
-  go build
+docker build --build-arg VERSION="$(git describe --tags --always --dirty 2>/dev/null || echo dev)" -t ideal:local .
+docker run --rm -e IDEAL_USERNAME=Ada ideal:local
 ```
 
-<!-- Build: Docker-->
-### :triangular_flag_on_post: Build: Docker Container
+(`make docker-build` passes `VERSION`, `COMMIT`, and `BUILD_DATE` for you.)
 
-Build this project as a `docker container`
+## Extending this template (2026+)
 
+Ideas that stay out of the minimal core but are common for real services—add what you need, delete what you do not.
 
-```bash
-  docker build --tag ideal_image
-```
+| Area | Libraries / approaches |
+|------|-------------------------|
+| **CLI** | [spf13/cobra](https://github.com/spf13/cobra), [alecthomas/kong](https://github.com/alecthomas/kong) for subcommands and flags at scale |
+| **HTTP** | Start with `net/http` + graceful `Shutdown`; then [go-chi/chi](https://github.com/go-chi/chi), [labstack/echo](https://github.com/labstack/echo), or [gofiber/fiber](https://github.com/gofiber/fiber) if you want a router/framework |
+| **Config** | Keep env-first; add file overlays with [knadh/koanf](https://github.com/knadh/koanf). Local-only `.env`: [joho/godotenv](https://github.com/joho/godotenv) (do not rely on it in production) |
+| **Data** | [jackc/pgx](https://github.com/jackc/pgx) + [sqlc](https://sqlc.dev/), or [ent](https://entgo.io/) / [gorm](https://gorm.io/) if you prefer an ORM |
+| **Observability** | [OpenTelemetry Go](https://go.opentelemetry.io/otel/) for traces and metrics; expose `pprof` and `expvar` behind auth in production |
+| **API contracts** | [oapi-codegen](https://github.com/oapi-codegen/oapi-codegen), [buf](https://buf.build/) + Connect/gRPC |
+| **Resilience** | [sony/gobreaker](https://github.com/sony/gobreaker), `golang.org/x/sync/errgroup`, context deadlines |
+| **Testing** | [stretchr/testify](https://github.com/stretchr/testify) (assertions), [testcontainers-go](https://golang.testcontainers.org/) (integration), [go.uber.org/mock](https://github.com/uber-go/mock) or `go generate` with `mockgen` |
+| **Releases** | [GoReleaser](https://goreleaser.com/) for archives, images, SBOMs, and changelog |
+| **Policy / security** | Keep `govulncheck` and golangci-lint; consider [OpenSSF Scorecard](https://scorecard.dev/) and dependency review on PRs |
 
-Run the `ideal` commands
+## References
 
-```bash
-  docker run --rm ideal_image ideal version
-```
+- [Standard Go Project Layout](https://github.com/golang-standards/project-layout)
+- [Organizing a Go module](https://go.dev/doc/modules/layout)
+- [Effective Go](https://go.dev/doc/effective_go)
+- [Vulnerability management](https://go.dev/doc/security/vuln/)
 
-<!-- Usage -->
-## :eyes: Usage
+## License
 
-
-```bash
-  # Run the ideal command
-  ideal do stuff
-```
-
-<!-- Roadmap -->
-## :compass: Lessons Learned & Roadmap
-
-- [ ] TODO Add lessons learned
-
-<!-- FAQ -->
-## :grey_question: FAQ
-
-- TODO: Add FAQ
-
-<!-- License -->
-## :warning: License
-
-Distributed under the MIT License. See LICENSE.txt for more information.
-
-<!-- Contact -->
-## :handshake: Contact
-
-Mika Ayenson - [@mikaayenson](https://github.com/Mikaayenson)
-
-<!-- Acknowledgments -->
-## :gem: References
-
-1. [Selecting a Package Name](https://go.dev/blog/package-names)
-2. Leverage an [Awesome Readme Template](https://github.com/Louis3797/awesome-readme-template/blob/main/README.md)
-3. Start organizing [Package Layout](https://github.com/golang-standards/project-layout)
-4. Add [Config Mangement](https://github.com/spf13/viper)
-5. Add [Log Management](https://github.com/sirupsen/logrus)
-6. TODO Add More References
+See [LICENSE](LICENSE).

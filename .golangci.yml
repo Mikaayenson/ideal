@@ -1,0 +1,20 @@
+version: "2"
+
+run:
+  timeout: 3m
+  relative-path-mode: gomod
+
+linters:
+  default: standard
+  enable:
+    # Suggests modern stdlib patterns (maps/slices, min/max, etc.).
+    - modernize
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
